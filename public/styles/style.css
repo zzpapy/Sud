@@ -1,0 +1,15 @@
+*{
+    margin: 0;
+    box-sizing: border-box;
+}
+.container{
+    padding: 2em;
+}
+.main{
+    display: flex;
+    justify-content: space-between;
+}
+.sud img{
+    width: 25%;
+    border-radius: 50%;
+}

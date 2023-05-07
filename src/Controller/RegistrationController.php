@@ -50,7 +50,6 @@ class RegistrationController extends AbstractController
 
             $entityManager->persist($user);
             $entityManager->flush();
-            dump($user->getEmail());
             // generate a signed url and email it to the user
             $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
                 ($mail = new TemplatedEmail())
@@ -67,7 +66,7 @@ class RegistrationController extends AbstractController
             //     $this->addFlash('success', 'Your email address has been verified.');
             // } catch (TransportExceptionInterface $e) {
             // }
-            dump($this->emailVerifier);die;
+            // dump($this->emailVerifier);die;
 
             
 

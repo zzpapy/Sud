@@ -3,27 +3,33 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Security\EmailVerifier;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
-use App\Security\EmailVerifier;
+use Symfony\Component\Mime\Address;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mime\Address;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
+use Symfony\Component\Mime\Email;
 
 class RegistrationController extends AbstractController
 {
     private EmailVerifier $emailVerifier;
+    private MailerInterface $mailer;
 
-    public function __construct(EmailVerifier $emailVerifier)
+    public function __construct(EmailVerifier $emailVerifier, MailerInterface $mailer)
     {
         $this->emailVerifier = $emailVerifier;
+        $this->mailer = $mailer;
     }
 
     #[Route('/register', name: 'app_register')]
@@ -47,13 +53,23 @@ class RegistrationController extends AbstractController
 
             // generate a signed url and email it to the user
             $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
-                (new TemplatedEmail())
-                    ->from(new Address('gregory.pace@hotmail.fr', 'Sud élections CSE'))
+                ($mail = new TemplatedEmail())
+                    ->from(new Address('gpace6096@gmail.com', 'Sud élections CSE'))
                     ->to($user->getEmail())
                     ->subject('Please Confirm your Email')
                     ->htmlTemplate('registration/confirmation_email.html.twig')
             );
             // do anything else you need here, like send an email
+           
+
+            // try {
+            //     $this->mailer->send($mail);
+            //     $this->addFlash('success', 'Your email address has been verified.');
+            // } catch (TransportExceptionInterface $e) {
+            // }
+            dump($this->emailVerifier);die;
+
+            
 
             return $this->redirectToRoute('app_home');
         }
